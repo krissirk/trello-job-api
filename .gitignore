@@ -104,3 +104,4 @@ ENV/
 .DS_Store
 
 # Config and secret key files
+configs.py
