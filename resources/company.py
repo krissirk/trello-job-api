@@ -1,11 +1,12 @@
-""" Creates a resource that features a lone Get endpoint to display the
-    range of companies that have been explored during job search. The code
-    consumes a batch API of Trello data that features cards across 3 lists.
-    The cards data is combined into a sorted JSON response that includes the
-    name of each distinct company that has been explored and a count of total
-    number of times a position with that company has been pursued. The resource
-    and endpoint are design to minimize the work of a client to display a summary
-    of this company data.
+"""
+Creates a resource that features a lone Get endpoint to display the
+range of companies that have been explored during job search. The code
+consumes a batch API of Trello data that features cards across 3 lists.
+The cards data is combined into a sorted JSON response that includes the
+name of each distinct company that has been explored and a count of total
+number of times a position with that company has been pursued. The resource
+and endpoint are design to minimize the work of a client to display a summary
+of this company data.
 """
 import requests, operator
 from flask_restful import Resource

@@ -1,5 +1,9 @@
-import requests, json
+"""
+Creates ...
+"""
+import requests, operator
 from flask_restful import Resource
+from collections import Counter
 
 from configs import *
 
