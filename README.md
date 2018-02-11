@@ -10,7 +10,7 @@ This is an API built with Python, Flask, and Flask-RESTful that exposes a subset
   * See <future URL> for a sample Trello board that would support this API.
 
 ## API Resources:
-* companies -
+* companies - The companies that have been explored as part of the job search. Features a single endpoint that returns a list of the companies and the number of explores for each.
 * cards -
 * applications -
 * interviews -

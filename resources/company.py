@@ -1,6 +1,6 @@
 """
-Creates a resource that features a lone Get endpoint to display the
-range of companies that have been explored during job search. The code
+Creates a resource that features a lone Get endpoint to expose the total
+list of companies that have been explored during job search. The code
 consumes a batch API of Trello data that features cards across 3 lists.
 The cards data is combined into a sorted JSON response that includes the
 name of each distinct company that has been explored and a count of total
