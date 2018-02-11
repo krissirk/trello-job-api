@@ -105,3 +105,6 @@ ENV/
 
 # Config and secret key files
 configs.py
+
+# Scratchpad file to help work through the logic and Python syntax of consuming and reformating the Trello API
+scratchpad.py
