@@ -1,10 +1,11 @@
 """
 Creates ...
 """
-import requests, operator
+import operator
 from flask_restful import Resource
 from collections import Counter
 
+import trello_request
 from configs import *
 
 # URL for Trello batch API comprised of IDs stored in configs.py file
@@ -16,12 +17,13 @@ trelloApiUrl = "https://api.trello.com/1/batch?urls=/lists/{0}/cards,/lists/{1}/
                 TRELLO_API_TOKEN)
 
 """
-try:
-	apiResponse = requests.get(trelloApiUrl, timeout=10)
-	apiResponse.close()
-	apiStatusCode = apiResponse.status_code
-except:
-	None
+# Trello API request
+trelloResponse, trelloStatusCode = trello_request.getApiResponse(trelloApiUrl)
+
+# Return an error if the Trello API request fails
+if trelloStatusCode != 200:
+    return {"message": "An error occurred retrieving the Companies data from Trello."}, 500
+
 """
 
 class AllCards(Resource):

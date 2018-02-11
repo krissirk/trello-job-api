@@ -8,10 +8,11 @@ number of times a position with that company has been pursued. The resource
 and endpoint are design to minimize the work of a client to display a summary
 of this company data.
 """
-import requests, operator
+import operator
 from flask_restful import Resource
 from collections import Counter
 
+import trello_request
 from configs import *
 
 # Companies resource featuring a single Get endpoint
@@ -28,17 +29,16 @@ class Companies(Resource):
                         TRELLO_API_TOKEN)
 
         # Trello API request
-        try:
-        	apiResponse = requests.get(trelloApiUrl, timeout=10)
-        	apiResponse.close()
-        	apiStatusCode = apiResponse.status_code
-        except:
-        	return {"message": "An error occurred retrieving the Companies data from Trello."}, 500
+        trelloResponse, trelloStatusCode = trello_request.getApiResponse(trelloApiUrl)
+
+        # Return an error if the Trello API request fails
+        if trelloStatusCode != 200:
+            return {"message": "An error occurred retrieving the Companies data from Trello."}, 500
 
         #Initialize a list that will store each company value in the Trello JSON
         companies = []
 
-        for lists in apiResponse.json():
+        for lists in trelloResponse.json():
 
             # The batch JSON response includes three 'list' groupings of Trello
             # cards; one for each workflow step of job search exploration
