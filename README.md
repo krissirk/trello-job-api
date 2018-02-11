@@ -11,7 +11,7 @@ This is an API built with Python, Flask, and Flask-RESTful that exposes a subset
 
 ## API Resources:
 * companies - The companies that have been explored as part of the job search. Features a single endpoint that returns a list of the companies and the number of explores for each.
-* cards -
+* cards - A summary of the data across all cards that represent job opportunities. Features a single endpoint that returns summarized groupings of the opportunities.
 * applications -
 * interviews -
 * closed-cards -
