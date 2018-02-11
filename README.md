@@ -7,6 +7,7 @@ This is an API that exposes a subset of data from a private Trello board trackin
 - A Trello board exists with three lists that each represent a stage in a job search workflow exploring a given opportunity - Applied, Interviewing, Closed.
 - Each job opportunity is represented as a Trello card that lives within one of the three lists. The naming convention for each card on the Trello board is "<Company Name> - <Job Title>"
 - Card Labels are used to classify a job opportunity by 1.) job search explore step achievement; and 2.) industry of job opportunity. There is only one set of Label options within Trello, so values across these two classifications are stored within the same list. Each card is tagged with two label values to reflect the current (or most advanced) explore stage and the industry of the opportunity.
+- See <future URL> for a sample Trello board that would support this API.
 
 ## API Resources:
 * companies -
