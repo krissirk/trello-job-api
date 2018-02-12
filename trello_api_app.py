@@ -10,6 +10,11 @@ application = Flask(__name__)
 # app.secret_key = JWT_SECRET
 api = Api(application)
 
+
+import os
+print("HEY")
+print(os.environ.get('TRELLO_APPLIED_LIST_ID'))
+
 # jwt = JWT(app, authenticate, identity)  # if/when i want to add authentication
 
 api.add_resource(AllExplores, '/all-explores')
