@@ -2,10 +2,15 @@
 Creates resources that represent various states and attributes of cards within
 a job search Trello board. The code consumes a batch API of Trello data that
 features cards across 3 lists; each list representing a job search status. The
-cards data is organized and summarized JSON responses for each relevant resource's
-Get endpoint. The resources each represent a slice of the job search data. The
-endpoints are designed to minimize the work of a client to display a summary
-of the relevant job search data.
+cards data is organized and summarized into JSON responses for each relevant
+resource's Get endpoint. The resources each represent a slice of the job search
+data. The endpoints are designed to minimize the work of a client to display a
+summary of the relevant job search data.
+
+NB: I have kept the definition of all these resources within the same file in order
+to limit the number of times that the Trello API is called. I'm sure there is
+a better way to organize all this code. I'm also sure there are much more elegant
+ways to parse the Trello JSON and build the custom response for this API.
 """
 from flask_restful import Resource
 
@@ -36,20 +41,24 @@ cardsJSON = {'jobSearchExplores':
             }
 
 # Initialize a tuple of the relevant job search activities/outcomes
+# This tuple will be checked in the logic below to distinguish the two sets
+# of the Trello Labels data and organize the information as intended
 outcomes = ('Phone interview',
             'On-site interview',
             'No interview',
             'Offer',
             'Explore')
 
+# Transform the JSON response from Trello into a dictionary of the relevant data
+# for this API
 for lists in trelloResponse.json():
     # The batch JSON response includes three 'list' groupings of Trello
     # cards; one for each workflow step of job search exploration
     for cards in lists['200']:
 
-        # If the 'idList' element of the card matches the ID of workflow
-        # status stored in the environment variable, increment the count
-        # in the JSON
+        # If the 'idList' element of the card matches the ID of workflow status
+        # stored in the environment variable, increment the appropriate count
+        # of cards in the JSON being assembled
         if cards['idList'] == TRELLO_APPLIED_LIST_ID:
             cardsJSON['exploresByStatus']['Applied'] += 1
         elif cards['idList'] == TRELLO_INTERVIEWING_LIST_ID:
@@ -61,11 +70,11 @@ for lists in trelloResponse.json():
         # dicionary of the JSON - either 'outcome' or 'industry'
         for label in cards['labels']:
             if label['name'] in outcomes:
-                x = cardsJSON['exploresByOutcome'].get(label['name'], 1) + 1
-                cardsJSON['exploresByOutcome'].update({label['name']: x})
+                outcomesCount = cardsJSON['exploresByOutcome'].get(label['name'], 0) + 1
+                cardsJSON['exploresByOutcome'].update({label['name']: outcomesCount})
             else:
-                y = cardsJSON['exploresByIndustry'].get(label['name'], 1) + 1
-                cardsJSON['exploresByIndustry'].update({label['name']: y})
+                industryCount = cardsJSON['exploresByIndustry'].get(label['name'], 0) + 1
+                cardsJSON['exploresByIndustry'].update({label['name']: industryCount})
 
         # As each card is checked, increment the overall count in the JSON
         cardsJSON['jobSearchExplores']['totalExplores'] += 1
@@ -81,21 +90,25 @@ class AllExplores(Resource):
 
 class Applications(Resource):
     def get(self):
-        # Return the dictionary holding the  summary of cards data in the "applied"
+        # Return a dictionary holding the summary of cards data in the "applied"
         # Trello board list; else, return an error if the Trello API request fails
         if trelloStatusCode == 200:
+
+            # Initialize JSON
             applicationsJSON = {'openApplications':
                                 {'totalApplied': cardsJSON['exploresByStatus']['Applied']},
                                  'appliedByIndustry': {},
                                }
 
+            # Loop through Trello JSON response, grab and summarize relevant data
+            # from the "Applied" list, and assign to the JSON for this endpoint
             for lists in trelloResponse.json():
                 for cards in lists['200']:
                     if cards['idList'] == TRELLO_APPLIED_LIST_ID:
                         for label in cards['labels']:
                             if label['name'] not in outcomes:
-                                yy = applicationsJSON['appliedByIndustry'].get(label['name'], 0) + 1
-                                applicationsJSON['appliedByIndustry'].update({label['name']: yy})
+                                appliedIndustryCount = applicationsJSON['appliedByIndustry'].get(label['name'], 0) + 1
+                                applicationsJSON['appliedByIndustry'].update({label['name']: appliedIndustryCount})
 
             return applicationsJSON
 
@@ -108,22 +121,26 @@ class Interviewing(Resource):
         # Return the dictionary holding the  summary of cards data in the "interviewing"
         # Trello board list; else, return an error if the Trello API request fails
         if trelloStatusCode == 200:
+
+            # Initialize JSON
             interviewsJSON = {'interviewingExplores':
                                 {'totalInterviewing': cardsJSON['exploresByStatus']['Interviewing']},
                                  'interviewingByIndustry': {},
                                  'interviewingByOutcome': {}
                                }
 
+            # Loop through Trello JSON response, grab and summarize relevant data
+            # from the "Interviewing" list, and assign to the JSON for this endpoint
             for lists in trelloResponse.json():
                 for cards in lists['200']:
                     if cards['idList'] == TRELLO_INTERVIEWING_LIST_ID:
                         for label in cards['labels']:
                             if label['name'] in outcomes:
-                                xx = interviewsJSON['interviewingByOutcome'].get(label['name'], 0) + 1
-                                interviewsJSON['interviewingByOutcome'].update({label['name']: xx})
+                                interviewOutcomeCount = interviewsJSON['interviewingByOutcome'].get(label['name'], 0) + 1
+                                interviewsJSON['interviewingByOutcome'].update({label['name']: interviewOutcomeCount})
                             else:
-                                yyy = interviewsJSON['interviewingByIndustry'].get(label['name'], 0) + 1
-                                interviewsJSON['interviewingByIndustry'].update({label['name']: yyy})
+                                interviewIndustryCount = interviewsJSON['interviewingByIndustry'].get(label['name'], 0) + 1
+                                interviewsJSON['interviewingByIndustry'].update({label['name']: interviewIndustryCount})
 
             return interviewsJSON
         else:
@@ -134,22 +151,26 @@ class ClosedExplores(Resource):
         # Return the dictionary holding the  summary of cards data in the "interviewing"
         # Trello board list; else, return an error if the Trello API request fails
         if trelloStatusCode == 200:
+
+            # Initialize JSON
             closedJSON = {'closedExplores':
                                 {'totalClosed': cardsJSON['exploresByStatus']['Closed']},
                                  'closedByIndustry': {},
                                  'closedByOutcome': {}
                                }
 
+            # Loop through Trello JSON response, grab and summarize relevant data
+            # from the "Closed" list, and assign to the JSON for this endpoint
             for lists in trelloResponse.json():
                 for cards in lists['200']:
                     if cards['idList'] == TRELLO_CLOSED_LIST_ID:
                         for label in cards['labels']:
                             if label['name'] in outcomes:
-                                abc = closedJSON['closedByOutcome'].get(label['name'], 0) + 1
-                                closedJSON['closedByOutcome'].update({label['name']: abc})
+                                closedOutcomeCount = closedJSON['closedByOutcome'].get(label['name'], 0) + 1
+                                closedJSON['closedByOutcome'].update({label['name']: closedOutcomeCount})
                             else:
-                                xyz = closedJSON['closedByIndustry'].get(label['name'], 0) + 1
-                                closedJSON['closedByIndustry'].update({label['name']: xyz})
+                                closedIndustryCount = closedJSON['closedByIndustry'].get(label['name'], 0) + 1
+                                closedJSON['closedByIndustry'].update({label['name']: closedIndustryCount})
 
             return closedJSON
         else:
