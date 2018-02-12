@@ -18,7 +18,7 @@ import os, trello_request
 
 # URL for Trello batch API comprised of IDs stored in config.py file (or server
 # envrionment variables) - probably a better way to do this
-'''try:
+try:
     from config import *
     trelloApiUrl = "https://api.trello.com/1/batch?urls=/lists/{0}/cards,/lists/{1}/cards,/lists/{2}/cards&key={3}&token={4}".format(
                     TRELLO_APPLIED_LIST_ID,
@@ -27,13 +27,12 @@ import os, trello_request
                     TRELLO_API_KEY,
                     TRELLO_API_TOKEN)
 except:
-    '''
-trelloApiUrl = "https://api.trello.com/1/batch?urls=/lists/{0}/cards,/lists/{1}/cards,/lists/{2}/cards&key={3}&token={4}".format(
-                os.environ.get('TRELLO_APPLIED_LIST_ID'),
-                os.environ.get('TRELLO_INTERVIEWING_LIST_ID'),
-                os.environ.get('TRELLO_CLOSED_LIST_ID'),
-                os.environ.get('TRELLO_API_KEY'),
-                os.environ.get('TRELLO_API_TOKEN'))
+    trelloApiUrl = "https://api.trello.com/1/batch?urls=/lists/{0}/cards,/lists/{1}/cards,/lists/{2}/cards&key={3}&token={4}".format(
+                    os.environ.get('TRELLO_APPLIED_LIST_ID'),
+                    os.environ.get('TRELLO_INTERVIEWING_LIST_ID'),
+                    os.environ.get('TRELLO_CLOSED_LIST_ID'),
+                    os.environ.get('TRELLO_API_KEY'),
+                    os.environ.get('TRELLO_API_TOKEN'))
 
 # Trello API request
 trelloResponse, trelloStatusCode = trello_request.getApiResponse(trelloApiUrl)
