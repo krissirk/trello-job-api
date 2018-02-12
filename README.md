@@ -7,9 +7,9 @@ This is an API built with Python, Flask, and Flask-RESTful that exposes a subset
   * A Trello board exists with three lists (i.e. Kanban column) that each represent a stage in a job search workflow exploring a given opportunity - Applied, Interviewing, Closed.
   * Each job opportunity is represented as a Trello card that lives within one of the three lists. The naming convention for each card on the Trello board is "<Company Name> - <Job Title>"
   * Card Labels are used to classify a job opportunity by 1.) job search explore step achievement; and 2.) industry of job opportunity. There is only one set of Label options within Trello, so values across these two classifications are stored within the same list. Each card is tagged with two label values to reflect the current (or most advanced) explore stage and the industry of the opportunity.
-* This application consumes a Trello response of a Bulk API request that combines three separate "list" requests.
+* This application consumes a Trello response of a Batch API request that combines three separate "list" requests.
 * See https://trello.com/b/OaudAfna/job-search-template for a sample Trello board that would support this API.
-* See "sample.json" file in this project for an example output produced by the Trello bulk API of cards within a list that this application parses.
+* See "sample.json" file in this project for an example output produced by the Trello Batch API of cards within a list that this application parses.
 
 ## API Resources:
 * companies - The companies that have been explored as part of the job search. Features a single endpoint that returns a list of the companies and the number of explores for each.
