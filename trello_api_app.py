@@ -6,9 +6,9 @@ from flask_restful import Api
 from resources.card import AllExplores, Applications, Interviewing, ClosedExplores
 from resources.company import Companies
 
-app = Flask(__name__)
+application = Flask(__name__)
 # app.secret_key = JWT_SECRET
-api = Api(app)
+api = Api(application)
 
 # jwt = JWT(app, authenticate, identity)  # if/when i want to add authentication
 
@@ -19,4 +19,4 @@ api.add_resource(ClosedExplores, '/closed-explores')
 api.add_resource(Companies, '/companies')
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    application.run(port=5001, debug=True)
