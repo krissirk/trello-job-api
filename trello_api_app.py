@@ -19,4 +19,4 @@ api.add_resource(ClosedExplores, '/closed-explores')
 api.add_resource(Companies, '/companies')
 
 if __name__ == '__main__':
-    application.run(port=5001, debug=True)
+    application.run(port=5001, debug=False)
