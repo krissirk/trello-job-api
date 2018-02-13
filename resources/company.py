@@ -71,6 +71,6 @@ class Companies(Resource):
 
         # Put each company and its count into the JSON
         for company in sortedCompanies:
-            companyJSON['companies'].append({'name': company[0], 'count': company[1]})
+            companyJSON['companies'].append({'name': company[0], 'totalCount': company[1]})
 
         return companyJSON
