@@ -67,7 +67,7 @@ class Companies(Resource):
 
             # Initialize the JSON for the Get endpoint and include a total count of
             # the companies in the response
-            companyJSON = {'companies': [], 'totalCompanies': len(sortedCompanies)}
+            companyJSON = {'companies': [], 'distinctCompanies': len(sortedCompanies)}
 
             # Put each company and its count into the JSON
             for company in sortedCompanies:
