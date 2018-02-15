@@ -2,15 +2,13 @@
 Creates a resource that features a lone Get endpoint to expose the total
 list of companies that have been explored during job search. The code
 consumes a batch API of Trello data that features cards across 3 lists.
-The cards data is combined into a sorted JSON response that includes the
-name of each distinct company that has been explored and a count of total
-number of times a position with that company has been pursued. The resource
-and endpoint are design to minimize the work of a client to display a summary
-of this company data.
+The cards data is combined into a JSON response that includes the
+name of each distinct company that has been explored and a count of each explore
+outcome, as well as the total number of times a position with that company has
+been pursued.
 """
 import operator
 from flask_restful import Resource
-from collections import Counter
 
 import os, trello_request
 
@@ -44,34 +42,66 @@ class Companies(Resource):
         # if the Trello API request fails
         if trelloStatusCode == 200:
 
-            #Initialize a list that will store each company value in the Trello JSON
+            # Initialize a list that will store each company value and explore
+            # outcome
             companies = []
 
+            # Initialize a tuple of the relevant job search activities/outcomes
+            # This tuple will be checked in the logic below to distinguish the two sets
+            # of the Trello Labels data and focus on just the exploring outcomes
+            outcomes = ('Phone interview',
+                        'On-site interview',
+                        'No interview',
+                        'Offer',
+                        'Exploring')
+
+            # Loop through the Trello API response, get each company+explore
+            # instance, build an initial list of dictionaries
             for lists in trelloResponse.json():
 
                 # The batch JSON response includes three 'list' groupings of Trello
                 # cards; one for each workflow step of job search exploration
-                for cards in lists['200']:
+                for card in lists['200']:
 
-                    # Append the name of each Trello card to the list; the Trello
-                    # card naming convention is <Company> - <Position Name>, so the
-                    # card value after the ' -' is stripped away
-                    companies.append(cards['name'].split('-')[0].strip())
+                    # Set the company name to be the Trello card name stripped
+                    # of all characters after an initial "-" is encountered.
+                    # The card naming convention is <Company Name> - <Job Desc>
+                    cardName = card['name'].split('-')[0].strip()
 
-            # Leverage the Counter object to get the count of each instance of a given
-            # company name in the list; cast it to be a proper dictionary object
-            countedCompanies = dict(Counter(companies))
+                    # Loop through each label assigned to the card; build a dict
+                    # with the company name as the key and the explore outcome
+                    # as the value. If no "outcome" is found, set the dict up
+                    # with an "applied" value, indicating that a decision to
+                    # interview hasn't been determined yet
+                    for label in card['labels']:
+                        if label['name'] in outcomes:
+                            companies.append({cardName: label['name']})
+                        elif len(card['labels']) < 2:
+                            companies.append({cardName: "Applied"})
 
-            # Sort the companies dictionary by name
-            sortedCompanies = sorted(countedCompanies.items(), key=operator.itemgetter(0))
+            # Initialize a dictionary that will store the final JSON to be
+            # returned by the endpoint
+            companyDict = {}
 
-            # Initialize the JSON for the Get endpoint and include a total count of
-            # the companies in the response
-            companyJSON = {'companies': [], 'distinctCompanies': len(sortedCompanies)}
+            # Loop through the list of companies and establish a count of each
+            # company + explore outcome instance; assemble the dictionary along
+            # with a total number of explores observed for each company
+            for company in companies:
+                for k, v in company.items():
+                    if k in companyDict.keys():
+                        if v in companyDict[k]["exploreOutcomes"]:
+                            companyDict[k]["exploreOutcomes"][v] += 1
+                        else:
+                            companyDict[k]["exploreOutcomes"][v] = 1
+                        companyDict[k]["totalExplores"] += 1
+                    else:
+                        companyDict.update({k: {"exploreOutcomes": {v: 1}}})
+                        companyDict[k]["totalExplores"] = 1
 
-            # Put each company and its count into the JSON
-            for company in sortedCompanies:
-                companyJSON['companies'].append({'name': company[0], 'exploreCount': company[1]})
+            # Finailze the JSON by putting the dictionary into a list of all the
+            # company details and supplement it with a total count of the
+            # distinct companies explored during the job search
+            companyJSON = {"companies": [companyDict], "distinctCompanies": len(companyDict)}
 
             return companyJSON
         else:
