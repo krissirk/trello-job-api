@@ -56,7 +56,7 @@ outcomes = ('Phone interview',
             'On-site interview',
             'No interview',
             'Offer',
-            'Explore')
+            'Exploring')
 
 # Transform the JSON response from Trello into a dictionary of the relevant data
 # for this API
