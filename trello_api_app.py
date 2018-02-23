@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
+
 # from flask_jwt import JWT # if/when i want to add authentication
 
 # from configs import JWT_SECRET # if/when i want to add authentication
@@ -7,6 +9,7 @@ from resources.card import AllExplores, Applications, Interviewing, ClosedExplor
 from resources.company import Companies
 
 application = Flask(__name__)
+CORS(application)
 # app.secret_key = JWT_SECRET
 api = Api(application)
 
